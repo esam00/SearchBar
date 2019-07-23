@@ -10,3 +10,9 @@ a search bar like google’s one that contains the following features:
 ## screenShots 
 <img src="screenshots/home.png" width=300> <img src="screenshots/autocomplete.png" width=300>
 <img src="screenshots/searchGoogle.png" width=300> <img src="screenshots/searchUrl.png" width=300>
+
+## Librarys 
+* MaterialSearchBar https://github.com/mancj/MaterialSearchBar
+* Retrofit2
+* RxJava
+* Gson 

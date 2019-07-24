@@ -22,6 +22,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -42,7 +44,8 @@ public class HomeActivity extends AppCompatActivity {
 
     //constants
     private static String GOOGLE_SEARCH_BASE_URL = "https://www.google.com/search?q=";
-
+    private static String REGEX_FULL_URL = "https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+    private static String REGEX_SHORT_URL = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,14 +153,16 @@ public class HomeActivity extends AppCompatActivity {
         String inputText = text.toString();
         String url = GOOGLE_SEARCH_BASE_URL+inputText;
 
-        // if input text contains .com we split it to see if it also has http or not
-        if(inputText.contains(".com")) {
-            String[] arr = inputText.split("w.", 2);
-            String urlSchema = arr[0];
-            if(urlSchema.equals("https://")){
+        //if input text contains "." see what type of url is it
+        if(inputText.contains(".")) {
+            //if user typed a short url like : facebook.com or mytedata.net,
+            // add the (https://)part to open the website not google search
+            if (IsMatch(inputText, REGEX_SHORT_URL)) {
+                url = "https://" + inputText;
+            }
+            // if text is a complete url open website
+            if (IsMatch(inputText, REGEX_FULL_URL)) {
                 url = inputText;
-            }else {
-                url = "https://www."+inputText;
             }
         }
 
@@ -196,6 +201,23 @@ public class HomeActivity extends AppCompatActivity {
                 })
         );
 
+    }
+
+    /**
+     * this method is generally used to match a given text with a specified pattern and returns boolean
+     * So we can use it to check if this is a valid url by using Regular Expressions or (regex)
+     * @param s text we want to check or validate it ex : a url (https://www.google.com )
+     * @param pattern Regex
+     * @return true they are matching
+     */
+    private static boolean IsMatch(String s, String pattern) {
+        try {
+            Pattern patt = Pattern.compile(pattern);
+            Matcher matcher = patt.matcher(s);
+            return matcher.matches();
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private void hideSoftInput(){
